@@ -1,0 +1,20 @@
+class Risk:
+    def __init__(self, description, probability, impact):
+        self.description = description
+        self.probability = int(probability)
+        self.impact = int(impact)
+        self.score = self.probability * self.impact
+
+    def get_severity(self):
+        if self.score >= 15:
+            return "High"
+        elif self.score >= 8:
+            return "Medium"
+        else:
+            return "Low"
+
+# Test koden din:
+my_risk = Risk("Server krasj", 4, 4)
+print(f"Risiko: {my_risk.description}")
+print(f"Score: {my_risk.score}")
+print(f"Severity: {my_risk.get_severity()}")
