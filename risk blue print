@@ -5,16 +5,42 @@ class Risk:
         self.impact = int(impact)
         self.score = self.probability * self.impact
 
+    # All these methods MUST be indented inside the class (Notice: I had this error!)
     def get_severity(self):
         if self.score >= 15:
-            return "High"
+            return "CRITICAL" # Changed to match your loop below
         elif self.score >= 8:
-            return "Medium"
+            return "MEDIUM"
         else:
-            return "Low"
+            return "LOW"
 
-# Test koden din:
-my_risk = Risk("Server krasj", 4, 4)
-print(f"Risiko: {my_risk.description}")
-print(f"Score: {my_risk.score}")
-print(f"Severity: {my_risk.get_severity()}")
+    def display_report(self):
+        severity = self.get_severity()
+        print(f"[{severity:^10}] | Score: {self.score:2} | Risk: {self.description}")
+
+
+# --- MAIN EXECUTION (No indentation here) ---
+
+risk_registry = []
+
+risk_registry.append(Risk("Unauthorized Data Access", 4, 5))
+risk_registry.append(Risk("Network Latency Issues", 3, 2))
+risk_registry.append(Risk("Database Migration Failure", 2, 5))
+risk_registry.append(Risk("Third-party API Downtime", 5, 3))
+risk_registry.append(Risk("Minor UI Bug", 1, 1))
+
+print("=" * 60)
+print("             ENTERPRISE RISK DASHBOARD             ")
+print("=" * 60)
+
+critical_count = 0
+
+for r in risk_registry:
+    r.display_report()
+    # Now this matches the string returned in get_severity
+    if r.get_severity() == "CRITICAL":
+        critical_count += 1
+
+print("=" * 60)
+print(f"SUMMARY: {critical_count} CRITICAL risks requiring immediate action.")
+print("=" * 60)
