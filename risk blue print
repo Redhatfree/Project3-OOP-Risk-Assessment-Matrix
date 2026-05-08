@@ -1,3 +1,7 @@
+
+
+import csv
+
 class Risk:
     def __init__(self, description, probability, impact):
         self.description = description
@@ -5,10 +9,9 @@ class Risk:
         self.impact = int(impact)
         self.score = self.probability * self.impact
 
-    # All these methods MUST be indented inside the class (Notice: I had this error!)
     def get_severity(self):
         if self.score >= 15:
-            return "CRITICAL" # Changed to match your loop below
+            return "CRITICAL"
         elif self.score >= 8:
             return "MEDIUM"
         else:
@@ -18,11 +21,10 @@ class Risk:
         severity = self.get_severity()
         print(f"[{severity:^10}] | Score: {self.score:2} | Risk: {self.description}")
 
-
-# --- MAIN EXECUTION (No indentation here) ---
-
+# --- MAIN EXECUTION ---
 risk_registry = []
 
+# Pre-loading your initial data
 risk_registry.append(Risk("Unauthorized Data Access", 4, 5))
 risk_registry.append(Risk("Network Latency Issues", 3, 2))
 risk_registry.append(Risk("Database Migration Failure", 2, 5))
@@ -30,17 +32,52 @@ risk_registry.append(Risk("Third-party API Downtime", 5, 3))
 risk_registry.append(Risk("Minor UI Bug", 1, 1))
 
 print("=" * 60)
-print("             ENTERPRISE RISK DASHBOARD             ")
+print("              ENTERPRISE RISK ENTRY SYSTEM             ")
 print("=" * 60)
 
-critical_count = 0
+# The Input Loop
+while True:
+    desc = input("Risk Description (or 'quit'): ")
+    if desc.lower() == "quit":
+        break
+    
+    try: 
+        # These lines MUST be indented to be inside the 'try' (importnat note for my mistakes)
+        prob = input(f"Enter Probability (1-5) for '{desc}': ")
+        imp = input(f"Enter Impact (1-5) for '{desc}': ")
+        
+        new_risk = Risk(desc, prob, imp)
+        risk_registry.append(new_risk)
+        print("✓ Risk added to registry.\n")
+        
+    except ValueError:
+        print("! Error: Use numbers for probability and impact!\n")
 
+# Logic: Calculate critical list BEFORE printing summary
+critical_risks = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
+
+print("\n" + "=" * 60)
+print("                 FINAL RISK DASHBOARD                  ")
+print("=" * 60)
+
+# Loop through and display every risk in the registry
 for r in risk_registry:
     r.display_report()
-    # Now this matches the string returned in get_severity
-    if r.get_severity() == "CRITICAL":
-        critical_count += 1
 
 print("=" * 60)
-print(f"SUMMARY: {critical_count} CRITICAL risks requiring immediate action.")
+print(f"TOTAL LOGGED: {len(risk_registry)} | CRITICAL DETECTED: {len(critical_risks)}")
+
+if critical_risks:
+    print(f"ACTION REQUIRED ON: {', '.join(critical_risks)}")
 print("=" * 60)
+
+# Export to CSV
+try:
+    with open('risk_report.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Description", "Score", "Severity"])
+        for r in risk_registry:
+            writer.writerow([r.description, r.score, r.get_severity()])
+    print("\n[SUCCESS] Report exported to 'risk_report.csv'")
+except Exception as e:
+    print(f"\n[ERROR] Could not save file: {e}")
