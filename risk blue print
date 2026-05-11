@@ -20,6 +20,7 @@ class Risk:
         print(f"[{severity:^10}] | Score: {self.score:2} | Risk: {self.description}")
 
 # --- MAIN EXECUTION ---
+# First number is probability and second one is impact
 risk_registry = []
 
 # Pre-loading your initial data
