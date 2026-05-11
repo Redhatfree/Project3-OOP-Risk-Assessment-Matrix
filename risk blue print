@@ -88,7 +88,7 @@ print(f"ACTION REQUIRED ON: {', '.join(critical_ones) if critical_ones else 'Non
     except ValueError:
         print("! Error: Use numbers for probability and impact!\n")
 
-# Logic: Calculate critical list BEFORE printing summary
+# Logic: Calculate critical list before printing summary
 critical_risks = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
 
 print("\n" + "=" * 60)
@@ -107,6 +107,7 @@ if critical_risks:
 print("=" * 60)
 
 # Export to CSV
+# it saves to CSV file
 try:
     with open('risk_report.csv', mode='w', newline='') as file:
         writer = csv.writer(file)
