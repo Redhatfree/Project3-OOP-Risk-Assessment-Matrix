@@ -67,6 +67,7 @@ else:
     print("No data available to analyze.")
 
 # ---  DATA ANALYSIS ---
+# r represent individual risk object in risk list
 all_scores = [r.score for r in risk_registry]
 avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
 critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
