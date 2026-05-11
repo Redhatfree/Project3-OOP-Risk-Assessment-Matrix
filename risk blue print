@@ -33,13 +33,40 @@ print("=" * 60)
 print("              ENTERPRISE RISK ENTRY SYSTEM             ")
 print("=" * 60)
 
-# The Input Loop
+
+# --- INPUT LOOP ---
 while True:
     desc = input("Risk Description (or 'quit'): ")
     if desc.lower() == "quit":
         break
+    
+    try:
+        # Check if numbers are within 1-5
+        prob = int(input("Probability (1-5): "))
+        imp = int(input("Impact (1-5): "))
+        
+        if 1 <= prob <= 5 and 1 <= imp <= 5:
+            risk_registry.append(Risk(desc, prob, imp))
+            print("✓ Risk logged.")
+        else:
+            print("! Error: Please stay between 1 and 5.")
+            
+    except ValueError:
+        print("! Error: Enter whole numbers only.")
 
-# --- NEW: DATA ANALYSIS ---
+# --- NEW: SORTING BEFORE DISPLAY ---
+# This sorts the list so highest scores are at the top
+risk_registry.sort(key=lambda r: r.score, reverse=True)
+
+# ---  SAFE STATISTICS ---
+if risk_registry:
+    all_scores = [r.score for r in risk_registry]
+    avg_score = sum(all_scores) / len(all_scores)
+    # ... rest of your analysis ...
+else:
+    print("No data available to analyze.")
+
+# ---  DATA ANALYSIS ---
 all_scores = [r.score for r in risk_registry]
 avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
 critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
