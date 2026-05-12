@@ -130,7 +130,7 @@ try:
         writer = csv.writer(file)
         writer.writerow(["Description", "Category", "Score", "Severity"])
         for r in risk_registry:
-            writer.writerow([r.description, r.score, r.get_severity()])
+            writer.writerow([r.description,r.category, r.score, r.get_severity()])
     print("\n[SUCCESS] Report exported to 'risk_report.csv'")
 except Exception as e:
     print(f"\n[ERROR] Could not save file: {e}")
