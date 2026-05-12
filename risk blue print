@@ -1,11 +1,12 @@
 import csv
 from datetime import datetime
 class Risk:
-    def __init__(self, description, probability, impact):
+    def __init__(self, description, probability, impact, category):
         self.description = description
         self.probability = int(probability)
         self.impact = int(impact)
         self.score = self.probability * self.impact
+        self.category = category
 
     def get_severity(self):
         if self.score >= 15:
@@ -18,6 +19,16 @@ class Risk:
     def display_report(self):
         severity = self.get_severity()
         print(f"[{severity:^10}] | Score: {self.score:2} | Risk: {self.description}")
+
+categories = ["MARKET", "NATURE", "HMS", "TECHNICAL", "INTERFACES"]
+risk_registry = []
+
+# Pre-loading data (Now including Categories)
+risk_registry.append(Risk("Unauthorized Data Access", 4, 5, "TECHNICAL"))
+risk_registry.append(Risk("Network Latency Issues", 3, 2, "TECHNICAL"))
+risk_registry.append(Risk("Database Migration Failure", 2, 5, "TECHNICAL"))
+risk_registry.append(Risk("Third-party API Downtime", 5, 3, "INTERFACES"))
+risk_registry.append(Risk("Minor UI Bug", 1, 1, "TECHNICAL"))
 
 # --- MAIN EXECUTION ---
 # First number is probability and second one is impact
