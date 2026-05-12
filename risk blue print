@@ -83,6 +83,9 @@ else:
 all_scores = [r.score for r in risk_registry]
 avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
 critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
+cat_stats = {}
+    for r in risk_registry:
+        cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
 
 # Add this to your summary print section:
 print(f"AVERAGE RISK SCORE: {avg_score:.2f}")
@@ -129,3 +132,4 @@ try:
     print("\n[SUCCESS] Report exported to 'risk_report.csv'")
 except Exception as e:
     print(f"\n[ERROR] Could not save file: {e}")
+    print(f"CATEGORY BREAKDOWN: {cat_stats}")
