@@ -20,6 +20,7 @@ class Risk:
         severity = self.get_severity()
         print(f"[{severity:^10}] | Score: {self.score:2} | Risk: {self.description}")
 
+
 categories = ["MARKET", "NATURE", "HMS", "TECHNICAL", "INTERFACES"]
 risk_registry = []
 
@@ -32,7 +33,7 @@ risk_registry.append(Risk("Minor UI Bug", 1, 1, "TECHNICAL"))
 
 # --- MAIN EXECUTION ---
 # First number is probability and second one is impact
-risk_registry = []
+
 
 # Pre-loading your initial data
 risk_registry.append(Risk("Unauthorized Data Access", 4, 5))
