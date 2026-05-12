@@ -128,7 +128,7 @@ print("=" * 60)
 try:
     with open('risk_report.csv', mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(["Description", "Score", "Severity"])
+        writer.writerow(["Description", "Category", "Score", "Severity"])
         for r in risk_registry:
             writer.writerow([r.description, r.score, r.get_severity()])
     print("\n[SUCCESS] Report exported to 'risk_report.csv'")
