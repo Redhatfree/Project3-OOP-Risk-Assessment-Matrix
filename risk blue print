@@ -6,7 +6,7 @@ class Risk:
         self.probability = int(probability)
         self.impact = int(impact)
         self.score = self.probability * self.impact
-        self.category = category
+        self.category = category.upper()
 
     def get_severity(self):
         if self.score >= 15:
@@ -17,26 +17,18 @@ class Risk:
             return "LOW"
 
     def display_report(self):
-        severity = self.get_severity()
-        print(f"[{severity:^10}] | Score: {self.score:2} | Risk: {self.description}")
+        sev = self.get_severity()
+        print(f"[{sev:^10}] | Score: {self.score:2} | Risk: {self.description}")
 
 
 categories = ["MARKET", "NATURE", "HMS", "TECHNICAL", "INTERFACES"]
 risk_registry = []
 
-# Pre-loading data (Now including Categories)
-risk_registry.append(Risk("Unauthorized Data Access", 4, 5, "TECHNICAL"))
-risk_registry.append(Risk("Network Latency Issues", 3, 2, "TECHNICAL"))
-risk_registry.append(Risk("Database Migration Failure", 2, 5, "TECHNICAL"))
-risk_registry.append(Risk("Third-party API Downtime", 5, 3, "INTERFACES"))
-risk_registry.append(Risk("Minor UI Bug", 1, 1, "TECHNICAL"))
-
 # --- MAIN EXECUTION ---
 # First number is probability and second one is impact
 
-
 # Pre-loading your initial data
-risk_registry.append(Risk("Unauthorized Data Access", 4, 5))
+risk_registry.append(Risk("Data Breach", 4, 5))
 risk_registry.append(Risk("Network Latency Issues", 3, 2))
 risk_registry.append(Risk("Database Migration Failure", 2, 5))
 risk_registry.append(Risk("Third-party API Downtime", 5, 3))
@@ -49,14 +41,15 @@ print("=" * 60)
 
 # --- INPUT LOOP ---
 while True:
-    desc = input("Risk Description (or 'quit'): ")
-    if desc.lower() == "quit":
-        break
+    desc = input("\Risk Description (or 'quit'): ")
+    if desc.lower() == "quit": break
     
     try:
         # Check if numbers are within 1-5
         prob = int(input("Probability (1-5): "))
         imp = int(input("Impact (1-5): "))
+        print(f"Available:{categories}")
+        cat = input("Category: ")
         
         if 1 <= prob <= 5 and 1 <= imp <= 5:
             risk_registry.append(Risk(desc, prob, imp, cat))
@@ -73,12 +66,9 @@ while True:
 risk_registry.sort(key=lambda r: r.score, reverse=True)
 
 # ---  SAFE STATISTICS ---
-if risk_registry:
-    all_scores = [r.score for r in risk_registry]
-    avg_score = sum(all_scores) / len(all_scores)
-    # ... rest of your analysis ...
-else:
-    print("No data available to analyze.")
+cat_stats = {}
+for r in risk_registry:
+    cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
 
 # ---  DATA ANALYSIS ---
 # r represent individual risk object in risk list
@@ -86,7 +76,7 @@ all_scores = [r.score for r in risk_registry]
 avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
 critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
 cat_stats = {}
-    for r in risk_registry:
+for r in risk_registry:
         cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
 
 # Add this to your summary print section:
