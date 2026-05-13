@@ -111,6 +111,50 @@ critical_risks = [r.description for r in risk_registry if r.get_severity() == "C
 print("\n" + "=" * 60)
 print("                 FINAL RISK DASHBOARD                  ")
 print("=" * 60)
+# --- WEDNESDAY UPGRADE: SEARCH & FILTER MODULE ---
+while True:
+    print("\n" + "-"*30)
+    print("      SEARCH & FILTER MENU")
+    print("-"*30)
+    print("[1] View All Risks (Sorted)")
+    print("[2] Filter by Category (HMS, IT, etc.)")
+    print("[3] Keyword Search")
+    print("[4] Exit & Save to CSV")
+    
+    choice = input("\nSelect an option: ")
+
+    if choice == "1":
+        print("\n--- ALL REGISTERED RISKS ---")
+        for r in risk_registry:
+            r.display_report()
+
+    elif choice == "2":
+        search_cat = input("Enter Category to filter: ").upper()
+        # This creates a temporary sub-list of only that category
+        filtered = [r for r in risk_registry if r.category == search_cat]
+        
+        if filtered:
+            print(f"\n--- {search_cat} RISKS ---")
+            for r in filtered:
+                r.display_report()
+        else:
+            print(f"No risks found in category: {search_cat}")
+
+    elif choice == "3":
+        query = input("Enter keyword (e.g., 'Data'): ").lower()
+        # Searches for the keyword inside the description
+        found = [r for r in risk_registry if query in r.description.lower()]
+        
+        if found:
+            print(f"\n--- SEARCH RESULTS FOR '{query}' ---")
+            for r in found:
+                r.display_report()
+        else:
+            print(f"No descriptions match: {query}")
+
+    elif choice == "4":
+        print("Finalizing data for export...")
+        break # This exits the menu and continues to the CSV Export code
 
 # Loop through and display every risk in the registry
 for r in risk_registry:
