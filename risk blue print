@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+
 class Risk:
     def __init__(self, description, probability, impact, category):
         self.description = description
@@ -9,55 +10,48 @@ class Risk:
         self.category = category.upper()
 
     def get_severity(self):
-        if self.score >= 15:
-            return "CRITICAL"
-        elif self.score >= 8:
-            return "MEDIUM"
-        else:
-            return "LOW"
+        if self.score >= 15: return "CRITICAL"
+        elif self.score >= 8: return "MEDIUM"
+        else: return "LOW"
 
     def display_report(self):
         sev = self.get_severity()
-        print(f"[{sev:^10}] | Score: {self.score:2} | Risk: {self.description}")
+        print(f"[{sev:^10}] | {self.category:^12} | Score: {self.score:2} | Risk: {self.description}")
 
-all_scores = [r.score for r in risk_registry]
-avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
-critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
-
-cat_stats = {}
-for r in risk_registry:
-    cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
-
+# --- SETUP ---
 categories = ["MARKET", "NATURE", "HMS", "TECHNICAL", "INTERFACES"]
 risk_registry = []
 
-# --- MAIN EXECUTION ---
-# First number is probability and second one is impact
-
-# Pre-loading your initial data
-risk_registry.append(Risk("Data Breach", 4, 5))
-risk_registry.append(Risk("Network Latency Issues", 3, 2))
-risk_registry.append(Risk("Database Migration Failure", 2, 5))
-risk_registry.append(Risk("Third-party API Downtime", 5, 3))
-risk_registry.append(Risk("Minor UI Bug", 1, 1))
+# Pre-loading (Now with Categories!)
+risk_registry.append(Risk("Data Breach", 4, 5, "TECHNICAL"))
+risk_registry.append(Risk("Network Latency Issues", 3, 2, "TECHNICAL"))
+risk_registry.append(Risk("Database Migration Failure", 2, 5, "TECHNICAL"))
+risk_registry.append(Risk("Third-party API Downtime", 5, 3, "INTERFACES"))
+risk_registry.append(Risk("Minor UI Bug", 1, 1, "TECHNICAL"))
 
 print("=" * 60)
-print("              ENTERPRISE RISK ENTRY SYSTEM             ")
+print("              ENTERPRISE RISK ENTRY SYSTEM              ")
 print("=" * 60)
-
 
 # --- INPUT LOOP ---
 while True:
-    desc = input("\Risk Description (or 'quit'): ")
-    if desc.lower() == "quit": break
+    desc = input("\nRisk Description (or 'quit'): ")
+    if desc.lower() == "quit": 
+        break
     
     try:
-        # Check if numbers are within 1-5
         prob = int(input("Probability (1-5): "))
         imp = int(input("Impact (1-5): "))
-        print(f"Available:{categories}")
-        cat = input("Category: ")
         
+        # CATEGORY VALIDATION 
+        while True:
+            cat_input = input(f"Select Category {categories}: ").upper()
+            if cat_input in categories:
+                cat = cat_input
+                break
+            else:
+                print(f"ERROR: '{cat_input}' is not valid.")
+
         if 1 <= prob <= 5 and 1 <= imp <= 5:
             risk_registry.append(Risk(desc, prob, imp, cat))
             print("✓ Risk logged.")
@@ -67,112 +61,59 @@ while True:
     except ValueError:
         print("! Error: Enter whole numbers only.")
 
-    
-# --- NEW: SORTING BEFORE DISPLAY ---
-# This sorts the list so highest scores are at the top
+# --- DATA ANALYSIS (Calculated once after inputting) ---
 risk_registry.sort(key=lambda r: r.score, reverse=True)
 
-# ---  SAFE STATISTICS ---
+all_scores = [r.score for r in risk_registry]
+avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
+critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
+
 cat_stats = {}
 for r in risk_registry:
     cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
 
-# ---  DATA ANALYSIS ---
-# r represent individual risk object in risk list
-all_scores = [r.score for r in risk_registry]
-avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
-critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
-cat_stats = {}
-for r in risk_registry:
-        cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
+# ---  HEATMAP DISPLAY ---
+print("\n" + "="*60)
+print("            DEPARTMENTAL RISK HEATMAP")
+print("="*60)
+for c in categories:
+    c_scores = [r.score for r in risk_registry if r.category == c]
+    if c_scores:
+        avg_c = sum(c_scores) / len(c_scores)
+        status = "🔴 HIGH" if avg_c > 12 else "🟢 STABLE"
+        print(f"{c:12} | Avg Score: {avg_c:4.1f} | Status: {status}")
 
-# Add this to your summary print section:
-print(f"AVERAGE RISK SCORE: {avg_score:.2f}")
-print(f"ACTION REQUIRED ON: {', '.join(critical_ones) if critical_ones else 'None'}")
-    
-    try: 
-        # These lines MUST be indented to be inside the 'try' (importnat note for my mistakes)
-        prob = input(f"Enter Probability (1-5) for '{desc}': ")
-        imp = input(f"Enter Impact (1-5) for '{desc}': ")
-        
-        new_risk = Risk(desc, prob, imp)
-        risk_registry.append(new_risk)
-        print("✓ Risk added to registry.\n")
-        
-    except ValueError:
-        print("! Error: Use numbers for probability and impact!\n")
-
-# Logic: Calculate critical list before printing summary
-critical_risks = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
-
-print("\n" + "=" * 60)
-print("                 FINAL RISK DASHBOARD                  ")
-print("=" * 60)
-# --- WEDNESDAY UPGRADE: SEARCH & FILTER MODULE ---
+# --- SEARCH & FILTER MENU ---
 while True:
-    print("\n" + "-"*30)
-    print("      SEARCH & FILTER MENU")
-    print("-"*30)
-    print("[1] View All Risks (Sorted)")
-    print("[2] Filter by Category (HMS, IT, etc.)")
-    print("[3] Keyword Search")
-    print("[4] Exit & Save to CSV")
-    
-    choice = input("\nSelect an option: ")
+    print("\n" + "-"*30 + "\n      SEARCH & FILTER MENU\n" + "-"*30)
+    print("[1] View All | [2] Filter Category | [3] Keyword Search | [4] Export & Exit")
+    choice = input("\nSelect: ")
 
     if choice == "1":
-        print("\n--- ALL REGISTERED RISKS ---")
-        for r in risk_registry:
-            r.display_report()
-
+        for r in risk_registry: r.display_report()
     elif choice == "2":
-        search_cat = input("Enter Category to filter: ").upper()
-        # This creates a temporary sub-list of only that category
+        search_cat = input("Enter Category: ").upper()
         filtered = [r for r in risk_registry if r.category == search_cat]
-        
-        if filtered:
-            print(f"\n--- {search_cat} RISKS ---")
-            for r in filtered:
-                r.display_report()
-        else:
-            print(f"No risks found in category: {search_cat}")
-
+        for r in filtered: r.display_report()
     elif choice == "3":
-        query = input("Enter keyword (e.g., 'Data'): ").lower()
-        # Searches for the keyword inside the description
+        query = input("Keyword: ").lower()
         found = [r for r in risk_registry if query in r.description.lower()]
-        
-        if found:
-            print(f"\n--- SEARCH RESULTS FOR '{query}' ---")
-            for r in found:
-                r.display_report()
-        else:
-            print(f"No descriptions match: {query}")
-
+        for r in found: r.display_report()
     elif choice == "4":
-        print("Finalizing data for export...")
-        break # This exits the menu and continues to the CSV Export code
+        break
 
-# Loop through and display every risk in the registry
-for r in risk_registry:
-    r.display_report()
-
-print("=" * 60)
-print(f"TOTAL LOGGED: {len(risk_registry)} | CRITICAL DETECTED: {len(critical_risks)}")
-
-if critical_risks:
-    print(f"ACTION REQUIRED ON: {', '.join(critical_risks)}")
+# --- FINAL SUMMARY & EXPORT ---
+print("\n" + "=" * 60)
+print(f"AVERAGE RISK SCORE: {avg_score:.2f}")
+print(f"TOTAL LOGGED: {len(risk_registry)} | CRITICAL: {len(critical_ones)}")
 print("=" * 60)
 
-# Export to CSV
-# it saves to CSV file
 try:
     with open('risk_report.csv', mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(["Description", "Category", "Score", "Severity"])
         for r in risk_registry:
-            writer.writerow([r.description,r.category, r.score, r.get_severity()])
-    print("\n[SUCCESS] Report exported to 'risk_report.csv'")
+            writer.writerow([r.description, r.category, r.score, r.get_severity()])
+    print(f"\n[SUCCESS] Exported. Breakdown: {cat_stats}")
 except Exception as e:
     print(f"\n[ERROR] Could not save file: {e}")
-    print(f"CATEGORY BREAKDOWN: {cat_stats}")
