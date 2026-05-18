@@ -22,7 +22,7 @@ class Risk:
 categories = ["MARKET", "NATURE", "HMS", "TECHNICAL", "INTERFACES"]
 risk_registry = []
 
-# Pre-loading (Now with Categories!)
+# Pre-loading (With Categories)
 risk_registry.append(Risk("Data Breach", 4, 5, "TECHNICAL"))
 risk_registry.append(Risk("Network Latency Issues", 3, 2, "TECHNICAL"))
 risk_registry.append(Risk("Database Migration Failure", 2, 5, "TECHNICAL"))
@@ -30,7 +30,7 @@ risk_registry.append(Risk("Third-party API Downtime", 5, 3, "INTERFACES"))
 risk_registry.append(Risk("Minor UI Bug", 1, 1, "TECHNICAL"))
 
 print("=" * 60)
-print("              ENTERPRISE RISK ENTRY SYSTEM              ")
+print("              ENTERPRISE RISK ENTRY SYSTEM               ")
 print("=" * 60)
 
 # --- INPUT LOOP ---
@@ -61,18 +61,44 @@ while True:
     except ValueError:
         print("! Error: Enter whole numbers only.")
 
-# --- DATA ANALYSIS (Calculated once after inputting) ---
+# --- DATA ANALYSIS & STATISTICAL FORECASTER ---
+# 1. Sorting first guarantees our top-3 slice picks the highest scores
 risk_registry.sort(key=lambda r: r.score, reverse=True)
 
 all_scores = [r.score for r in risk_registry]
 avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
 critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
 
+# Task 1 & 2: Advanced Phase 4 Metrics
+if risk_registry:
+    total_portfolio_exposure = sum(all_scores)
+    risk_density = (len(critical_ones) / len(risk_registry)) * 100
+    top_three_risks = risk_registry[:3]  # Task 3: List Slicing
+else:
+    total_portfolio_exposure = 0
+    risk_density = 0
+    top_three_risks = []
+
 cat_stats = {}
 for r in risk_registry:
     cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
 
-# ---  HEATMAP DISPLAY ---
+# --- EXECUTIVE ANALYTICS SUMMARY DASHBOARD ---
+print("\n" + "=" * 60)
+print("             EXECUTIVE ANALYTICS SUMMARY              ")
+print("=" * 60)
+print(f"TOTAL PORTFOLIO RISK EXPOSURE : {total_portfolio_exposure}")
+print(f"PORTFOLIO RISK DENSITY        : {risk_density:.1f}%")
+print("-" * 60)
+print(" TOP 3 HIGHEST PRIORITY THREATS:")
+if top_three_risks:
+    for i, r in enumerate(top_three_risks, start=1):
+        print(f"  {i}. Score: {r.score:2} | [{r.category:^10}] {r.description}")
+else:
+    print("  No risks registered.")
+print("=" * 60)
+
+# --- HEATMAP DISPLAY ---
 print("\n" + "="*60)
 print("            DEPARTMENTAL RISK HEATMAP")
 print("="*60)
@@ -117,4 +143,3 @@ try:
     print(f"\n[SUCCESS] Exported. Breakdown: {cat_stats}")
 except Exception as e:
     print(f"\n[ERROR] Could not save file: {e}")
-# orders are importnat in this code
