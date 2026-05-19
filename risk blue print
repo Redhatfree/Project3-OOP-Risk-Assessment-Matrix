@@ -18,6 +18,10 @@ class Risk:
         sev = self.get_severity()
         print(f"[{sev:^10}] | {self.category:^12} | Score: {self.score:2} | Risk: {self.description}")
 
+def get_contingency_cost(self):
+        # Dynamically returns the 50,000 NOK corporate reserve buffer for this specific risk score
+        return self.score * 50000
+
 # --- SETUP ---
 categories = ["MARKET", "NATURE", "HMS", "TECHNICAL", "INTERFACES"]
 risk_registry = []
@@ -62,12 +66,33 @@ while True:
         print("! Error: Enter whole numbers only.")
 
 # --- DATA ANALYSIS & STATISTICAL FORECASTER ---
-# 1. Sorting first guarantees our top-3 slice picks the highest scores
 risk_registry.sort(key=lambda r: r.score, reverse=True)
 
 all_scores = [r.score for r in risk_registry]
 avg_score = sum(all_scores) / len(risk_registry) if risk_registry else 0
 critical_ones = [r.description for r in risk_registry if r.get_severity() == "CRITICAL"]
+
+if risk_registry:
+    total_portfolio_exposure = sum(all_scores)
+    risk_density = (len(critical_ones) / len(risk_registry)) * 100
+    top_three_risks = risk_registry[:3]
+    
+    # Task 1: Calling our class
+    contingency_buffer = sum([r.get_contingency_cost() for r in risk_registry])
+    
+    # Task 2: Streamlined conditional engine
+    if risk_density > 25 or total_portfolio_exposure > 50:
+        action_trigger = "🚨 IMMEDIATE CORPORATE AUDIT REQUIRED"
+    elif 10 <= risk_density <= 25:
+        action_trigger = "⚠️ MONITOR SYSTEM CLOSELY - INCREASE MITIGATION FREQUENCY"
+    else:
+        action_trigger = "🟢 PROJECT STABLE - CONTINUE STANDARD OPERATIONS"
+else:
+    total_portfolio_exposure = 0
+    risk_density = 0
+    top_three_risks = []
+    contingency_buffer = 0
+    action_trigger = "🟢 NO RISKS DETECTED"
 
 # Task 1 & 2: Advanced Phase 4 Metrics
 if risk_registry:
