@@ -82,17 +82,17 @@ if risk_registry:
     
     # Task 2: Streamlined conditional engine
     if risk_density > 25 or total_portfolio_exposure > 50:
-        action_trigger = "🚨 IMMEDIATE CORPORATE AUDIT REQUIRED"
+        action_trigger = "IMMEDIATE CORPORATE AUDIT REQUIRED"
     elif 10 <= risk_density <= 25:
-        action_trigger = "⚠️ MONITOR SYSTEM CLOSELY - INCREASE MITIGATION FREQUENCY"
+        action_trigger = " MONITOR SYSTEM CLOSELY - INCREASE MITIGATION FREQUENCY"
     else:
-        action_trigger = "🟢 PROJECT STABLE - CONTINUE STANDARD OPERATIONS"
+        action_trigger = "PROJECT STABLE - CONTINUE STANDARD OPERATIONS"
 else:
     total_portfolio_exposure = 0
     risk_density = 0
     top_three_risks = []
     contingency_buffer = 0
-    action_trigger = "🟢 NO RISKS DETECTED"
+    action_trigger = "NO RISKS DETECTED"
 
 # Task 1 & 2: Advanced Phase 4 Metrics
 if risk_registry:
@@ -131,7 +131,7 @@ for c in categories:
     c_scores = [r.score for r in risk_registry if r.category == c]
     if c_scores:
         avg_c = sum(c_scores) / len(c_scores)
-        status = "🔴 HIGH" if avg_c > 12 else "🟢 STABLE"
+        status = " HIGH" if avg_c > 12 else " STABLE"
         print(f"{c:12} | Avg Score: {avg_c:4.1f} | Status: {status}")
 
 # --- SEARCH & FILTER MENU ---
