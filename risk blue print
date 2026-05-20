@@ -154,17 +154,27 @@ while True:
         break
 
 # --- FINAL SUMMARY & EXPORT ---
+
 print("\n" + "=" * 60)
 print(f"AVERAGE RISK SCORE: {avg_score:.2f}")
 print(f"TOTAL LOGGED: {len(risk_registry)} | CRITICAL: {len(critical_ones)}")
 print("=" * 60)
 
-try:
-    with open('risk_report.csv', mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["Description", "Category", "Score", "Severity"])
-        for r in risk_registry:
-            writer.writerow([r.description, r.category, r.score, r.get_severity()])
-    print(f"\n[SUCCESS] Exported. Breakdown: {cat_stats}")
-except Exception as e:
-    print(f"\n[ERROR] Could not save file: {e}")
+# Check if we actually have data to save before opening file resources
+if risk_registry:
+    try:
+        with open('risk_report.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Description", "Category", "Score", "Severity", "Contingency Cost (NOK)"])
+            
+            for r in risk_registry:
+                # Upgrading our export to include our brand new Day 3 class method!
+                writer.writerow([r.description, r.category, r.score, r.get_severity(), f"{r.get_contingency_cost():,} NOK"])
+                
+        print(f"\n[SUCCESS] Exported portfolio report to CSV.")
+        print(f"Department Distribution: {cat_stats}")
+    except Exception as e:
+        print(f"\n[ERROR] Could not save file: {e}")
+else:
+    # Safe fallback if the operator exits immediately
+    print("\n[NOTICE] Risk registry is empty. CSV export aborted to prevent blank file creation.")
