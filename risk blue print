@@ -168,7 +168,7 @@ if risk_registry:
             writer.writerow(["Description", "Category", "Score", "Severity", "Contingency Cost (NOK)"])
             
             for r in risk_registry:
-                # Upgrading our export to include our brand new Day 3 class method!
+                # Upgrading our export
                 writer.writerow([r.description, r.category, r.score, r.get_severity(), f"{r.get_contingency_cost():,} NOK"])
                 
         print(f"\n[SUCCESS] Exported portfolio report to CSV.")
