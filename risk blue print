@@ -94,19 +94,6 @@ else:
     contingency_buffer = 0
     action_trigger = "NO RISKS DETECTED"
 
-# Task 1 & 2: Advanced Phase 4 Metrics
-if risk_registry:
-    total_portfolio_exposure = sum(all_scores)
-    risk_density = (len(critical_ones) / len(risk_registry)) * 100
-    top_three_risks = risk_registry[:3]  # Task 3: List Slicing
-else:
-    total_portfolio_exposure = 0
-    risk_density = 0
-    top_three_risks = []
-
-cat_stats = {}
-for r in risk_registry:
-    cat_stats[r.category] = cat_stats.get(r.category, 0) + 1
 
 # --- EXECUTIVE ANALYTICS SUMMARY DASHBOARD ---
 print("\n" + "=" * 60)
