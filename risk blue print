@@ -14,13 +14,13 @@ class Risk:
         elif self.score >= 8: return "MEDIUM"
         else: return "LOW"
 
+    def get_contingency_cost(self):
+        # Dynamically returns the 50,000 NOK corporate reserve buffer for this specific risk score
+        return self.score * 50000
+        
     def display_report(self):
         sev = self.get_severity()
         print(f"[{sev:^10}] | {self.category:^12} | Score: {self.score:2} | Risk: {self.description}")
-
-def get_contingency_cost(self):
-        # Dynamically returns the 50,000 NOK corporate reserve buffer for this specific risk score
-        return self.score * 50000
 
 # --- SETUP ---
 categories = ["MARKET", "NATURE", "HMS", "TECHNICAL", "INTERFACES"]
