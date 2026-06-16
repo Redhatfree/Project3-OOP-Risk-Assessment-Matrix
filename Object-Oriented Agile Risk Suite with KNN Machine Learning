@@ -20,7 +20,7 @@ class AgileTask:
         self.predicted_risk_layer = "PENDING EVALUATION"
 
     def display_profile(self):
-        print(f"📋 Task: {self.task_name:<30} | Points: {self.story_points:<2} | Hours: {self.estimated_hours:<2} -> Risk: {self.predicted_risk_layer}")
+        print(f" Task: {self.task_name:<30} | Points: {self.story_points:<2} | Hours: {self.estimated_hours:<2} -> Risk: {self.predicted_risk_layer}")
 
 
 # ========================================================
