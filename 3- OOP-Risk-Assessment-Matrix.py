@@ -48,9 +48,9 @@ class EnterpriseProjectTask:
         
         # Determine human-readable cost status from variance math
         if cv < 0:
-            cost_status = "🚨 OVER BUDGET"
+            cost_status = " OVER BUDGET"
         else:
-            cost_status = "🟢 WITHIN BUDGET"
+            cost_status = " WITHIN BUDGET"
             
         # Formatting parameters: 
         # ID: 8 chars left-aligned, Name: 30 chars left-aligned, CPI/SPI: 6 chars with 2 decimal precision
