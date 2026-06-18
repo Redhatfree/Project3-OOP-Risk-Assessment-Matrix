@@ -8,17 +8,19 @@ Project 3 - Milestone 1: Object-Oriented Earned Value Management (EVM) Engine
 # ========================================================
 # 1. THE DOMAIN OBJECT BLUEPRINT (OOP CLASS)
 # ========================================================
+
 class EnterpriseProjectTask:
     """
     Enterprise-level blueprint to instantiate and manage individual project 
     tasks with integrated Earned Value Management (EVM) analytics.
     """
-    def __init__(self, task_id, task_name, planned_value, actual_cost, earned_value):
+    def __init__(self, task_id, task_name, planned_value, actual_cost, earned_value, predicted_risk):
         self.task_id = task_id
         self.task_name = task_name
         self.planned_value = float(planned_value)
         self.actual_cost = float(actual_cost)
         self.earned_value = float(earned_value)
+        self.predicted_risk= predicted_risk
 
     def calculate_cost_variance(self):
         """Calculates Cost Variance (CV = EV - AC). Positive is good, negative is over budget."""
@@ -56,7 +58,42 @@ class EnterpriseProjectTask:
         # ID: 8 chars left-aligned, Name: 30 chars left-aligned, CPI/SPI: 6 chars with 2 decimal precision
         print(f"{self.task_id:<8} | {self.task_name:<30} | {cpi:<6.2f} | {spi:<6.2f} | {cost_status}")
 
+class TaskRiskClassifier:
+    def __init__(self,k_neighbours=3):
+        self.model = KNeighborsClassifier(n_neighbors=k_neighbors)
+        def train_model(self):
+        """Trains the KNN classifier using historical sprint and project metrics."""
+        print(" AI ENGINE: Training KNN Classifier on historical project logs...")
+        
+        # Historical metrics dataset (Features: [CPI, SPI])
+        historical_features = np.array([
+            [1.20, 1.15], [1.05, 1.10], [1.00, 1.00],  # Healthy, efficient tasks (Stage 0)
+            [0.95, 0.90], [0.85, 0.88], [0.90, 0.80],  # Moderately strained tasks (Stage 0)
+            [0.60, 0.55], [0.50, 0.62], [0.45, 0.50]   # Heavy cost overruns and delays (Stage 1)
+        ])
+        
+        # Corresponding classification targets (0 = STABLE, 1 = CRITICAL RISK)
+        historical_labels = np.array([0, 0, 0, 0, 0, 0, 1, 1, 1])
+        
+        # Train the internal model
+        self.model.fit(historical_features, historical_labels)
+        print("✔ AI ENGINE: Training complete. Predictive model is now live.\n")
 
+    def evaluate_task(self, task_object):
+        """Accepts a live task object and predicts its risk classification layer using KNN."""
+        # Extract features dynamically from the passed object instance methods
+        cpi = task_object.calculate_cpi()
+        spi = task_object.calculate_spi()
+        input_data = np.array([[cpi, spi]])
+        
+        # Execute model prediction
+        prediction = self.model.predict(input_data)[0]
+        
+        # Update the object's internal attribute state based on the classification result
+        if prediction == 1:
+            task_object.predicted_risk = " CRITICAL RISK"
+        else:
+            task_object.predicted_risk = " STABLE PIPELINE"
 # ========================================================
 # 2. LIVE CONSULTING PIPELINE EXECUTION (RUNNING THE CODE)
 # ========================================================
