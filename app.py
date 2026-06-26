@@ -4,17 +4,23 @@ Created on Tuesday, June 23, 2026
 @author: Rouzbeh
 Project 4 - Step 3: Sidebar Controls & Portfolio Filtering
 """
+# -*- coding: utf-8 -*-
+"""
+Created on Friday, June 26, 2026
+@author: Rouzbeh
+Project 4 - Step 4: Metric Toggles & Chart Visualizations
+"""
 import streamlit as st
 import pandas as pd
 
 # 1. Page Configuration
-st.set_page_config(page_title="Advanced Portfolio Filters", page_icon="🎛️", layout="wide")
+st.set_page_config(page_title="Risk & Performance Visualizer", page_icon="📈", layout="wide")
 
-st.title("🎛️ Dynamic Portfolio Filter Suite")
-st.subheader("Project 4: Interactive Inputs & Data Slicing")
-st.markdown("Use the controls on the left sidebar to slice and filter your project risk matrix in real-time.")
+st.title("📈 Portfolio Risk & Performance Visualizer")
+st.subheader("Project 4: Interactive Charts & Trend Lines")
+st.markdown("Use the sidebar to slice the data and watch the performance charts update instantly.")
 
-# 2. Hardcoded Dataset
+# 2. Dataset Setup
 raw_data = {
     "Task ID": ["TSK-001", "TSK-002", "TSK-003", "TSK-004"],
     "Infrastructure Project Name": [
@@ -30,7 +36,7 @@ raw_data = {
 
 df = pd.DataFrame(raw_data)
 
-# Calculate Core Metrics
+# Calculate Metrics
 df["Calculated CPI"] = (df["Earned Value ($M)"] / df["Actual Cost ($M)"]).round(2)
 df["Calculated SPI"] = (df["Earned Value ($M)"] / df["Planned Value ($M)"]).round(2)
 df["AI Risk Status"] = df.apply(
@@ -38,45 +44,40 @@ df["AI Risk Status"] = df.apply(
     axis=1
 )
 
-# ==========================================
-# 3. SIDEBAR CONTROLS (Today's Addition)
-# ==========================================
+# 3. Sidebar Controls
 st.sidebar.header("🕹️ Control Panel")
-
-# Filter 1: Dropdown selector for Risk Status
 status_options = ["All Statuses", "🚨 CRITICAL RISK", "🟢 STABLE PIPELINE"]
 selected_status = st.sidebar.selectbox("Filter by Risk Profile:", status_options)
 
-# Filter 2: Slider for Minimum Budget (Planned Value)
-min_budget = st.sidebar.slider(
-    "Minimum Planned Value Budget ($M):", 
-    min_value=1.0, 
-    max_value=10.0, 
-    value=1.0, 
-    step=0.5
+# NEW: Chart Metric Toggle Widget
+chart_metric = st.sidebar.radio(
+    "Choose Metric to Visualize:",
+    ["Calculated CPI", "Calculated SPI"]
 )
 
-# Apply Sidebar Filters to the Dataframe
-filtered_df = df[df["Planned Value ($M)"] >= min_budget]
-
+# Apply Data Filter
+filtered_df = df.copy()
 if selected_status != "All Statuses":
     filtered_df = filtered_df[filtered_df["AI Risk Status"] == selected_status]
 
-# ==========================================
+# 4. Interface Columns
+c1, c2 = st.columns([1, 1])
 
-# 4. Display Summary KPIs for FILTERED data
-st.divider()
-c1, c2 = st.columns(2)
 with c1:
-    st.metric("Filtered Portfolio Budget", f"${filtered_df['Planned Value ($M)'].sum():.1f} Million")
+    st.markdown(f"### 📋 Filtered Data Grid")
+    if filtered_df.empty:
+        st.warning("⚠️ No projects match criteria.")
+    else:
+        st.dataframe(filtered_df, use_container_width=True, hide_index=True)
+
 with c2:
-    critical_count = int((filtered_df["AI Risk Status"] == "🚨 CRITICAL RISK").sum())
-    st.metric("Visible Critical Risks", f"{critical_count} Tasks")
-
-st.divider()
-
-# 5. Render the Filtered Grid
-if filtered_df.empty:
-    st.warning("⚠️ No projects match your active sidebar filter criteria! Adjust the controls to see data.")
-else:
-    st.dataframe(filtered_df, use_container_width=True, hide_index=True)
+    st.markdown(f"### 📊 Portfolio {chart_metric[-3:]} Comparison")
+    if filtered_df.empty:
+        st.info("Adjust filters to generate visual chart.")
+    else:
+        # Create a clean bar chart mapping projects to selected metric
+        chart_data = filtered_df.set_index("Infrastructure Project Name")[[chart_metric]]
+        st.bar_chart(chart_data)
+        
+        # Draw a baseline performance threshold line at 1.0
+        st.caption("💡 Note: A value below 1.0 indicates a project is over budget (CPI) or behind schedule (SPI).")
