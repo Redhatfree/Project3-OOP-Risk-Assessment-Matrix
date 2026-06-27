@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 """
+Created on Fri Jun 19 17:31:36 2026
+
+@author: Rouzbeh
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Friday, June 19, 2026
 @author: Rouzbeh
-# Final verified submission - June 19, 2026
-
 Project 3: Object-Oriented Project Delivery Suite with KNN Risk Classification & Excel Automation
 """
 import numpy as np
