@@ -1,24 +1,20 @@
+
+
 # -*- coding: utf-8 -*-
 """
-Created on Tuesday, June 23, 2026
+Created on Tuesday, June 30, 2026
 @author: Rouzbeh
-Project 4 - Step 3: Sidebar Controls & Portfolio Filtering
-"""
-# -*- coding: utf-8 -*-
-"""
-Created on Friday, June 26, 2026
-@author: Rouzbeh
-Project 4 - Step 4: Metric Toggles & Chart Visualizations
+Project 4 - Step 5: Range Sliders & Styled Conditional Alerts
 """
 import streamlit as st
 import pandas as pd
 
 # 1. Page Configuration
-st.set_page_config(page_title="Risk & Performance Visualizer", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Strategic Risk Matrix", page_icon="🎛️", layout="wide")
 
-st.title("📈 Portfolio Risk & Performance Visualizer")
-st.subheader("Project 4: Interactive Charts & Trend Lines")
-st.markdown("Use the sidebar to slice the data and watch the performance charts update instantly.")
+st.title("🎛️ Strategic Risk Matrix & Range Filtering")
+st.subheader("Project 4: Multi-Dimensional Input Slicing")
+st.markdown("Use the control panel below to fine-tune your financial performance thresholds and visualize risk impact.")
 
 # 2. Dataset Setup
 raw_data = {
@@ -49,16 +45,30 @@ st.sidebar.header("🕹️ Control Panel")
 status_options = ["All Statuses", "🚨 CRITICAL RISK", "🟢 STABLE PIPELINE"]
 selected_status = st.sidebar.selectbox("Filter by Risk Profile:", status_options)
 
-# NEW: Chart Metric Toggle Widget
 chart_metric = st.sidebar.radio(
     "Choose Metric to Visualize:",
     ["Calculated CPI", "Calculated SPI"]
 )
 
-# Apply Data Filter
+# NEW: Numeric Range Filter Slider
+budget_range = st.sidebar.slider(
+    "Select Planned Value Budget Range ($M):",
+    min_value=1.0,
+    max_value=10.0,
+    value=(1.0, 10.0),  # Tuple indicates a two-sided range slider
+    step=0.5
+)
+
+# Apply Data Filters (Status + Budget Range)
 filtered_df = df.copy()
 if selected_status != "All Statuses":
     filtered_df = filtered_df[filtered_df["AI Risk Status"] == selected_status]
+
+# Filtering rows that fall WITHIN the chosen range slider min/max boundaries
+filtered_df = filtered_df[
+    (filtered_df["Planned Value ($M)"] >= budget_range[0]) & 
+    (filtered_df["Planned Value ($M)"] <= budget_range[1])
+]
 
 # 4. Interface Columns
 c1, c2 = st.columns([1, 1])
@@ -66,7 +76,7 @@ c1, c2 = st.columns([1, 1])
 with c1:
     st.markdown(f"### 📋 Filtered Data Grid")
     if filtered_df.empty:
-        st.warning("⚠️ No projects match criteria.")
+        st.warning("⚠️ No projects match criteria. Adjust sliders.")
     else:
         st.dataframe(filtered_df, use_container_width=True, hide_index=True)
 
@@ -75,9 +85,12 @@ with c2:
     if filtered_df.empty:
         st.info("Adjust filters to generate visual chart.")
     else:
-        # Create a clean bar chart mapping projects to selected metric
         chart_data = filtered_df.set_index("Infrastructure Project Name")[[chart_metric]]
         st.bar_chart(chart_data)
         
-        # Draw a baseline performance threshold line at 1.0
-        st.caption("💡 Note: A value below 1.0 indicates a project is over budget (CPI) or behind schedule (SPI).")
+        # NEW: Conditional Status Warning Display Box
+        critical_count = int((filtered_df["AI Risk Status"] == "🚨 CRITICAL RISK").sum())
+        if critical_count > 0:
+            st.error(f"⚠️ Action Required: There are {critical_count} critical project bottlenecks visible in this view.")
+        else:
+            st.success("✅ Clean Slate: All current filtered projects are operating efficiently within normal bounds.")
