@@ -2,19 +2,19 @@
 
 # -*- coding: utf-8 -*-
 """
-Created on Tuesday, June 30, 2026
+Created on Wednesday, July 1, 2026
 @author: Rouzbeh
-Project 4 - Step 5: Range Sliders & Styled Conditional Alerts
+Project 4 - Step 6: Memory Pipelines & CSV Export Engines
 """
 import streamlit as st
 import pandas as pd
 
 # 1. Page Configuration
-st.set_page_config(page_title="Strategic Risk Matrix", page_icon="🎛️", layout="wide")
+st.set_page_config(page_title="Risk Export Center", page_icon="💾", layout="wide")
 
-st.title("🎛️ Strategic Risk Matrix & Range Filtering")
-st.subheader("Project 4: Multi-Dimensional Input Slicing")
-st.markdown("Use the control panel below to fine-tune your financial performance thresholds and visualize risk impact.")
+st.title("💾 Enterprise Risk Center & Export Pipeline")
+st.subheader("Project 4: In-Memory Data Compilation")
+st.markdown("Slice your dataset using the control panel, then export the live filtered subset instantly to a CSV spreadsheet.")
 
 # 2. Dataset Setup
 raw_data = {
@@ -50,21 +50,19 @@ chart_metric = st.sidebar.radio(
     ["Calculated CPI", "Calculated SPI"]
 )
 
-# NEW: Numeric Range Filter Slider
 budget_range = st.sidebar.slider(
     "Select Planned Value Budget Range ($M):",
     min_value=1.0,
     max_value=10.0,
-    value=(1.0, 10.0),  # Tuple indicates a two-sided range slider
+    value=(1.0, 10.0),
     step=0.5
 )
 
-# Apply Data Filters (Status + Budget Range)
+# Apply Filters
 filtered_df = df.copy()
 if selected_status != "All Statuses":
     filtered_df = filtered_df[filtered_df["AI Risk Status"] == selected_status]
 
-# Filtering rows that fall WITHIN the chosen range slider min/max boundaries
 filtered_df = filtered_df[
     (filtered_df["Planned Value ($M)"] >= budget_range[0]) & 
     (filtered_df["Planned Value ($M)"] <= budget_range[1])
@@ -76,9 +74,26 @@ c1, c2 = st.columns([1, 1])
 with c1:
     st.markdown(f"### 📋 Filtered Data Grid")
     if filtered_df.empty:
-        st.warning("⚠️ No projects match criteria. Adjust sliders.")
+        st.warning("⚠️ No projects match criteria.")
     else:
         st.dataframe(filtered_df, use_container_width=True, hide_index=True)
+        
+        st.divider()
+        # ==========================================
+        # NEW: IN-MEMORY CSV COMPILATION ENGINE
+        # ==========================================
+        # Convert the dynamic dataframe into a standard comma-separated text string string
+        csv_buffer = filtered_df.to_csv(index=False).encode('utf-8')
+        
+        # Draw a physical file download button interface
+        st.download_button(
+            label="📥 Download Filtered Backlog as CSV",
+            data=csv_buffer,
+            file_name="filtered_portfolio_risk_report.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+        # ==========================================
 
 with c2:
     st.markdown(f"### 📊 Portfolio {chart_metric[-3:]} Comparison")
@@ -88,7 +103,6 @@ with c2:
         chart_data = filtered_df.set_index("Infrastructure Project Name")[[chart_metric]]
         st.bar_chart(chart_data)
         
-        # NEW: Conditional Status Warning Display Box
         critical_count = int((filtered_df["AI Risk Status"] == "🚨 CRITICAL RISK").sum())
         if critical_count > 0:
             st.error(f"⚠️ Action Required: There are {critical_count} critical project bottlenecks visible in this view.")
